@@ -86,10 +86,10 @@ export default function Sobre() {
             </h2>
 
             <p className={s.summary}>
-              Olá! Eu sou um estudante da UNIFAL, atualmente no oitavo período.
-              Desenvolvedor JR que adora resolver problemas e desafios. Tenho
-              experiências práticas recentes com Node.js, React, JavaScript e
-              banco de dados.
+              Olá! Sou Cientista da Computação formado na UNIFAL. Atualemnte no
+              cargo de Desenvolvedor JR que adora resolver problemas e desafios.
+              Tenho experiências práticas recentes com Node.js, React,
+              JavaScript e banco de dados.
             </p>
           </div>
 

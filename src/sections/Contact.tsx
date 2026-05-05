@@ -25,7 +25,7 @@ export default function Contact() {
               githubUrl="https://github.com/GustavoAlot"
               whatsappUrl="https://wa.me/+5567998158212"
               emailAddress="gusalot22@gmail.com"
-              cvUrl="src/assets/GustavoFernandezPTBR.pdf"
+              cvUrl={`${import.meta.env.BASE_URL}assets/GustavoFernandezPTBR.pdf`}
             />
           </div>
         </div>
