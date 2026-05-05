@@ -1,5 +1,5 @@
 import EmailSent from "../components/EmailSent";
-import Footer from "../components/footer";
+import Footer from "../components/Footers";
 import QuickLinks from "../components/QuickLinks";
 import styles from "./Contact.module.scss";
 export default function Contact() {
