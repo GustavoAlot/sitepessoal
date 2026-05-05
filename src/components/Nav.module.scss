@@ -1,0 +1,172 @@
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
+  backdrop-filter: blur(6px);
+  background: color-mix(in oklch, var(--bg) 90%, transparent);
+
+  border-bottom: 1px solid var(--border);
+}
+
+/* container */
+.inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 16px;
+
+  display: flex;
+  justify-content: center; /* centraliza os links */
+  align-items: center;
+
+  position: relative; /* necessário pro botão absoluto */
+}
+
+/* links centralizados */
+.links {
+  display: flex;
+  gap: 24px;
+}
+
+/* link padrão */
+.link {
+  background: transparent;
+  border: none;
+  padding: 6px 8px;
+
+  cursor: pointer;
+
+  color: var(--fg-dim);
+  font: inherit;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+
+.link:hover {
+  color: var(--fg);
+}
+
+.active {
+  color: var(--fg);
+  text-shadow: 0 0 6px var(--fg);
+}
+
+/* wrapper do botão */
+.fxWrapper {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* botão FX */
+.fxButton {
+  padding: 6px 12px;
+
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+
+  color: var(--fg);
+  background: rgba(0, 0, 0, 0.25);
+
+  border: 1px solid var(--border);
+  text-shadow: var(--shadow);
+
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.fxButton:hover {
+  border-color: var(--fg-dim);
+  background: rgba(92, 255, 174, 0.08);
+}
+
+/* estado ligado/desligado */
+.fxButton[aria-pressed="false"] {
+  color: var(--fg-dim);
+  border-style: dashed;
+}
+
+/* tooltip */
+.fxTooltip {
+  position: absolute;
+  bottom: -36px;
+  right: 0;
+
+  padding: 6px 10px;
+
+  background: hsl(154 35% 8%);
+  border: 1px solid var(--fg-dim);
+
+  color: var(--fg);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+
+  text-shadow: var(--shadow);
+
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all 0.15s ease;
+
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* mostra tooltip no hover */
+.fxWrapper:hover .fxTooltip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (max-width: 720px) {
+  .inner {
+    padding: 10px 12px;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .links {
+    width: 100%;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .link {
+    padding: 4px 5px;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+
+  .fxWrapper {
+    position: static;
+    transform: none;
+  }
+
+  .fxButton {
+    padding: 4px 10px;
+    font-size: 11px;
+  }
+
+  .fxTooltip {
+    display: none;
+  }
+}
+
+@media (max-width: 420px) {
+  .links {
+    gap: 6px;
+  }
+
+  .link {
+    font-size: 11px;
+  }
+
+  .fxButton {
+    font-size: 10px;
+  }
+}

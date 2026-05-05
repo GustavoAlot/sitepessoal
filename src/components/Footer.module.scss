@@ -1,0 +1,31 @@
+.footer {
+  margin-top: 40px;
+  padding-top: 16px;
+
+  border-top: 1px solid var(--border);
+
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--muted);
+
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+}
+
+.footer:hover {
+  opacity: 1;
+}
+
+.footer p {
+  margin: 0;
+}
+
+/* opcional: links bonitos */
+.footer a {
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}

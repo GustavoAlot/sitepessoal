@@ -1,0 +1,191 @@
+/* ===========================================================
+   Botão CRT (ghost) — refatorado
+   - Borda NÃO muda em hover/active
+   - Hover: fundo verde-escuro translúcido
+   - Texto: sempre branco
+   - Focus-visible: anel custom (não-alaranjado)
+   - Neutraliza utilities "ring-*" sem matar nosso focus
+   =========================================================== */
+
+/* Paleta local (pode herdar do theme via fallback) */
+:root {
+  --crt-green-strong:   oklch(0.30 0.24 142);
+  --crt-green-stronger: oklch(0.24 0.24 142);
+}
+
+/* =========================
+   Base do botão
+   ========================= */
+.btn-crt {
+  /* fundos translúcidos */
+  --btn-bg-hover:  color-mix(in oklch, var(--crt-green-strong) 55%, transparent);
+  --btn-bg-active: color-mix(in oklch, var(--crt-green-stronger) 70%, transparent);
+
+  /* borda “congelada” reaproveitada em todos os estados */
+  --btn-border: color-mix(in oklch, var(--fg, oklch(0.8 0.2 142)) 22%, transparent);
+
+  --btn-radius: 8px;
+
+  -webkit-appearance: none;
+  appearance: none;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  min-height: 42px;
+  padding: 10px 20px;
+
+  width: min(680px, 90vw); /* use .is-full p/ ocupar 100% */
+  border-radius: 2px;
+  background: transparent;
+  color: oklch(0.98 0 0); /* branco forte */
+
+  border: 0.5px solid var(--btn-border);
+  box-shadow:
+    0 0 0 1px var(--border, oklch(0.2 0 0)) inset,
+    0 8px 16px oklch(0 0 0 / .35);
+
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  line-height: 1;
+
+  position: relative;
+  z-index: 1;
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    background-color .18s ease,
+    border-color .18s ease,
+    color .18s ease,
+    transform .06s ease,
+    box-shadow .18s ease,
+    opacity .18s ease;
+}
+
+/* Largura total opcional */
+.btn-crt.is-full { width: 100%; }
+
+/* Ícone e label */
+.btn-crt .btn-ico-wrap { display: inline-flex; pointer-events: none; }
+.btn-crt .btn-ico { width: 20px; height: 20px; flex: 0 0 auto; opacity: .95; }
+.btn-crt .btn-label { white-space: nowrap; }
+
+/* Ajuste de padding quando tem ícone (fallback ao :has) */
+.btn-crt.has-icon { padding-inline: 14px 18px; }
+@supports selector(:has(*)) {
+  .btn-crt:has(> .btn-ico-wrap) { padding-inline: 14px 18px; }
+}
+
+/* =========================
+   Estados visuais
+   ========================= */
+
+/* Hover: fundo verde escuro translúcido; borda permanece igual */
+.btn-crt:hover {
+  background: var(--btn-bg-hover);
+  color: oklch(0.98 0 0);
+  border-color: var(--btn-border); /* congela a borda */
+  box-shadow:
+    0 0 0 1px var(--border, oklch(0.2 0 0)) inset,
+    0 10px 20px oklch(0 0 0 / .5);
+}
+
+/* Active: mais denso e “pressionado”; borda permanece igual */
+.btn-crt:active {
+  background: var(--btn-bg-active);
+  transform: translateY(1px);
+  border-color: var(--btn-border); /* congela a borda */
+  box-shadow:
+    0 0 0 1px var(--border, oklch(0.2 0 0)) inset,
+    0 6px 14px oklch(0 0 0 / .5);
+}
+
+/* Focus custom (sem “laranja”): anel discreto usando --ring do tema se houver */
+.btn-crt:focus { outline: none; }
+.btn-crt:focus-visible {
+  outline: none;
+  /* mantém a borda “congelada” + adiciona um anel externo suave */
+  border-color: var(--btn-border);
+  box-shadow:
+    0 0 0 1px var(--border, oklch(0.2 0 0)) inset,
+    0 0 0 2px color-mix(in oklch, var(--ring, oklch(0.8 0.2 142 / 0.5)) 65%, transparent),
+    0 8px 16px oklch(0 0 0 / .35);
+}
+
+/* Opcional: glow interno sutil (não cobre scanlines) */
+.btn-crt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s ease;
+  box-shadow: 0 0 20px 2px color-mix(in oklch, var(--crt-green-strong) 18%, transparent) inset;
+}
+.btn-crt:hover::after { opacity: 1; }
+
+/* Disabled */
+.btn-crt:disabled,
+.btn-crt[aria-disabled="true"] {
+  opacity: .5;
+  cursor: not-allowed;
+  filter: grayscale(.15);
+}
+
+/* =========================
+   Utilitários opcionais
+   (não alteram o visual padrão)
+   ========================= */
+
+/* Tamanhos */
+.btn-crt--sm {         /* menorzinho */
+  min-height: 34px;
+  padding: 6px 12px;
+  font-size: .9rem;
+  gap: 8px;
+
+  .btn-ico { width: 16px; height: 16px; }
+}
+.btn-crt--md {         /* explícito = padrão atual */
+  min-height: 42px;
+  padding: 10px 20px;
+  font-size: .95rem;
+}
+.btn-crt--lg {         /* maior */
+  min-height: 48px;
+  padding: 12px 24px;
+  font-size: 1.05rem;
+  gap: 14px;
+
+  .btn-ico { width: 22px; height: 22px; }
+}
+
+/* Largura: seu padrão usa width:min(680px,90vw).
+   Se quiser “soltar” a largura em contextos específicos: */
+.btn-crt--auto { width: auto; max-width: 100%; }
+.btn-crt--fit  { width: fit-content; max-width: 100%; }
+
+/* Variante “fantasma” mais discreta (se quiser ligar por classe extra) */
+.btn-crt--ghost-soft {
+  --btn-bg-hover:  color-mix(in oklch, var(--crt-green-strong) 35%, transparent);
+  --btn-bg-active: color-mix(in oklch, var(--crt-green-stronger) 50%, transparent);
+  box-shadow:
+    0 0 0 1px var(--border, oklch(0.2 0 0)) inset,
+    0 6px 12px oklch(0 0 0 / .35);
+}
+
+
+
+/* Motion-reduce */
+@media (prefers-reduced-motion: reduce) {
+  .btn-crt,
+  .btn-crt::after { transition: none; }
+}

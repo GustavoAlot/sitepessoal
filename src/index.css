@@ -1,0 +1,20 @@
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: hsl(154 50% 5%);
+  color: hsl(154 84% 70%);
+  text-shadow: 0 0 4px hsl(154 84% 70%);
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    monospace;
+}
+
+/* garante que o app fique acima dos overlays */
+#root {
+  position: relative;
+  z-index: 1;
+}

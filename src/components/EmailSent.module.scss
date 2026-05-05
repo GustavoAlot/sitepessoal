@@ -1,0 +1,74 @@
+.wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.form {
+  display: grid;
+  gap: 1rem;
+
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+
+  grid-template-rows: auto auto 1fr auto auto;
+}
+
+.label {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.input,
+.textarea {
+  background: var(--card);
+  color: var(--card-fg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font: inherit;
+}
+
+.textarea {
+  resize: vertical;
+  min-height: 140px;
+}
+
+.error {
+  background: oklch(0.3 0.04 25 / 0.4);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+}
+
+.success {
+  background: color-mix(in oklch, var(--crt-green-strong) 55%, transparent);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  border-radius: 10px;
+  padding: 0.6rem 0.8rem;
+}
+
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+@media (max-width: 560px) {
+  .wrap {
+    width: 100%;
+  }
+}

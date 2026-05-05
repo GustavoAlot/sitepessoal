@@ -1,0 +1,52 @@
+.fab {
+  position: fixed;
+  left: 50%;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 12000;
+
+  display: flex; /* 👈 adiciona */
+  align-items: center; /* 👈 opcional */
+  gap: 10px; /* 👈 espaço entre os botões */
+
+  animation: nudge 2.6s infinite ease-in-out;
+}
+.nextBtn {
+  font-family: var(--font-mono);
+  font-size: 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 32px;
+  height: 32px;
+
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--fg);
+
+  cursor: pointer;
+
+  text-shadow: var(--shadow);
+}
+
+@keyframes nudge {
+  0%,
+  90%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  95% {
+    transform: translateX(-50%) translateY(-2px);
+  }
+}
+
+.noAnim {
+  animation: none;
+}
+
+/* esconde quando a overlay de detalhes estiver aberta */
+:global(body.detail-open) .fab {
+  display: none;
+}
