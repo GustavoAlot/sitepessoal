@@ -1,128 +1,155 @@
-import { useState } from "react";
-import styles from "./EmailSent.module.scss";
-import { CrtButton, EnvelopeIcon } from "../components/CrtButton";
+import { useEffect, useRef, useState, type FormEvent } from "react";
+import { Send } from "lucide-react";
+import { profile } from "../data/profile";
+import {
+  CONTACT_ERROR,
+  validateContact,
+  type ContactErrors,
+} from "../lib/contact";
 
-type Status = "idle" | "sending" | "ok" | "error";
+type Status = "idle" | "sending" | "success" | "error";
 
-type Props = {
-  /** Endpoint do Formspree (padrão do seu exemplo) */
+export default function EmailSent({
+  endpoint = profile.formEndpoint,
+}: {
   endpoint?: string;
-};
-
-export default function EmailSent({ endpoint = "https://formspree.io/f/xjkoqjlb" }: Props) {
+}) {
   const [status, setStatus] = useState<Status>("idle");
-  const [errorMsg, setErrorMsg] = useState("");
+  const [errors, setErrors] = useState<ContactErrors>({});
+  const controllerRef = useRef<AbortController | null>(null);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setErrorMsg("");
-    setStatus("sending");
+  useEffect(() => () => controllerRef.current?.abort(), []);
 
-    const form = e.currentTarget;
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (status === "sending") return;
+    const form = event.currentTarget;
     const data = new FormData(form);
+    // Quietly discard bot submissions without contacting the external service.
+    if (String(data.get("company") || "").trim()) return;
 
-    // honeypot anti-spam
-    if ((data.get("company") as string)?.trim()) {
-      setStatus("ok");
-      form.reset();
+    const email = String(data.get("email") || "").trim();
+    const message = String(data.get("message") || "").trim();
+    const nextErrors = validateContact(email, message);
+    setErrors(nextErrors);
+    setStatus("idle");
+    if (Object.keys(nextErrors).length) {
+      const field = form.elements.namedItem(
+        nextErrors.email ? "email" : "message",
+      );
+      if (field instanceof HTMLElement) field.focus();
       return;
     }
 
-    const email = (data.get("email") as string)?.trim();
-    const message = (data.get("message") as string)?.trim();
-
-    // validações simples
-    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
-      setStatus("idle");
-      setErrorMsg("Informe um e-mail válido.");
-      return;
-    }
-    if (!message || message.length < 8) {
-      setStatus("idle");
-      setErrorMsg("Escreva uma mensagem com pelo menos 8 caracteres.");
-      return;
-    }
-
+    data.set("email", email);
+    data.set("message", message);
+    setStatus("sending");
+    const controller = new AbortController();
+    controllerRef.current = controller;
+    const timeout = window.setTimeout(() => controller.abort(), 15000);
     try {
-      const res = await fetch(endpoint, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { Accept: "application/json" },
         body: data,
+        signal: controller.signal,
       });
-
-      if (!res.ok) {
-        let errText = "Não foi possível enviar agora. Tente novamente em instantes.";
-        try {
-          const j = await res.json();
-          if (j?.errors?.[0]?.message) errText = j.errors[0].message;
-        } catch {}
-        throw new Error(errText);
-      }
-
-      setStatus("ok");
+      if (!response.ok) throw new Error(CONTACT_ERROR);
+      setStatus("success");
       form.reset();
-    } catch (err: any) {
+    } catch {
       setStatus("error");
-      setErrorMsg(err?.message || "Erro inesperado ao enviar.");
-      console.error(err);
+    } finally {
+      window.clearTimeout(timeout);
+      controllerRef.current = null;
     }
   }
 
-  const isSending = status === "sending";
-
   return (
-    <section className={styles.wrap}>
-
-      <form onSubmit={handleSubmit} className={styles.form} noValidate>
-        {/* honeypot (não remover name="company") */}
-        <input type="text" name="company" tabIndex={-1} autoComplete="off" className={styles.honeypot} />
-
-        <label className={styles.label}>
-          Seu e-mail
+    <form
+      className="contact-form"
+      onSubmit={handleSubmit}
+      noValidate
+      aria-label="Enviar mensagem"
+    >
+      <div className="panel-bar">
+        <span>NOVA_MENSAGEM</span>
+        <span>CANAL DIRETO</span>
+      </div>
+      <div className="form-body">
+        <fieldset disabled={status === "sending"}>
+          <legend className="sr-only">Sua mensagem</legend>
+          <div className="honeypot" aria-hidden="true">
+            <label>
+              Empresa
+              <input
+                type="text"
+                name="company"
+                tabIndex={-1}
+                autoComplete="off"
+              />
+            </label>
+          </div>
+          <label className="field-label" htmlFor="contact-email">
+            Seu e-mail <span aria-hidden="true">*</span>
+          </label>
           <input
-            className={styles.input}
-            type="email"
+            id="contact-email"
             name="email"
-            placeholder="voce@exemplo.com"
-            required
-            aria-invalid={!!errorMsg || undefined}
+            type="email"
             autoComplete="email"
-          />
-        </label>
-
-        <label className={styles.label}>
-          Mensagem
-          <textarea
-            className={styles.textarea}
-            name="message"
-            rows={6}
-            placeholder="Escreva sua mensagem..."
             required
+            placeholder="voce@exemplo.com"
+            aria-invalid={Boolean(errors.email)}
+            aria-describedby={errors.email ? "email-error" : undefined}
           />
-        </label>
-
-        {/* status */}
-        {errorMsg && (
-          <div className={styles.error} role="alert" aria-live="polite">
-            {errorMsg}
-          </div>
-        )}
-        {status === "ok" && (
-          <div className={styles.success} role="status" aria-live="polite">
-            Mensagem enviada, obrigado pelo contato!
-          </div>
-        )}
-
-        <CrtButton
-          className="btn-crt--sm btn-crt--auto"
-          type="submit"
-          icon={<EnvelopeIcon />}
-          disabled={isSending}
-          aria-busy={isSending}
-        >
-          {isSending ? "Enviando..." : "Enviar"}
-        </CrtButton>
-      </form>
-    </section>
+          {errors.email && (
+            <p id="email-error" className="field-error" role="alert">
+              {errors.email}
+            </p>
+          )}
+          <label
+            className="field-label message-label"
+            htmlFor="contact-message"
+          >
+            Sua mensagem <span aria-hidden="true">*</span>
+          </label>
+          <textarea
+            id="contact-message"
+            name="message"
+            rows={5}
+            required
+            minLength={8}
+            placeholder="Me conte sobre a oportunidade, uma ideia ou um projeto..."
+            aria-invalid={Boolean(errors.message)}
+            aria-describedby={errors.message ? "message-error" : undefined}
+          />
+          {errors.message && (
+            <p id="message-error" className="field-error" role="alert">
+              {errors.message}
+            </p>
+          )}
+          <button
+            className="button button-primary send-button"
+            type="submit"
+            aria-busy={status === "sending"}
+          >
+            <Send size={16} aria-hidden="true" />
+            {status === "sending" ? "Enviando mensagem..." : "Enviar mensagem"}
+          </button>
+        </fieldset>
+        <div className="form-status" aria-live="polite" aria-atomic="true">
+          {status === "success" && (
+            <p className="form-success">
+              Mensagem enviada. Obrigado pelo contato!
+            </p>
+          )}
+          {status === "error" && <p className="field-error">{CONTACT_ERROR}</p>}
+        </div>
+        <p className="form-note">
+          Envio via Formspree. Seu e-mail será usado para responder ao contato.
+        </p>
+      </div>
+    </form>
   );
 }

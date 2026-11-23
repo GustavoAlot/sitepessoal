@@ -1,147 +1,137 @@
 import { useEffect, useRef } from "react";
-import styles from "./AsciiVideo.module.scss";
+import { createStaticSignal, pixelsToAscii } from "../lib/ascii";
 import waveVideo from "../assets/ascii-wave.webm";
 
-const ASCII_CHARS =
-  " .'`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$";
+const staticSignal = createStaticSignal();
 
-function getRefs(
-  video: HTMLVideoElement | null,
-  canvas: HTMLCanvasElement | null,
-  pre: HTMLPreElement | null,
-) {
-  if (!video || !canvas || !pre) return null;
-
-  const context = canvas.getContext("2d", {
-    willReadFrequently: true,
-  });
-
-  if (!context) return null;
-
-  return {
-    video,
-    canvas,
-    pre,
-    ctx: context,
-  };
-}
-
-export default function AsciiVideo() {
+export default function AsciiVideo({
+  animated = true,
+}: {
+  animated?: boolean;
+}) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const refs = getRefs(videoRef.current, canvasRef.current, preRef.current);
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    const pre = preRef.current;
+    const wrapper = wrapperRef.current;
+    if (!video || !canvas || !pre || !wrapper) return;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) return;
 
-    if (!refs) return;
+    let disposed = false;
+    let inViewport = false;
+    let frameId = 0;
+    let generation = 0;
+    let lastFrame = 0;
+    let failed = false;
 
-    const { video, canvas, pre, ctx } = refs;
+    function drawFrame() {
+      if (
+        !video ||
+        !canvas ||
+        !pre ||
+        !context ||
+        video.readyState < 2 ||
+        !video.videoWidth ||
+        failed
+      )
+        return;
+      const columns = 80;
+      const rows = Math.max(
+        1,
+        Math.round(((columns * video.videoHeight) / video.videoWidth) * 0.5),
+      );
+      if (canvas.width !== columns || canvas.height !== rows) {
+        canvas.width = columns;
+        canvas.height = rows;
+      }
+      try {
+        context.drawImage(video, 0, 0, columns, rows);
+        pre.textContent = pixelsToAscii(
+          context.getImageData(0, 0, columns, rows).data,
+          columns,
+        );
+      } catch {
+        failed = true;
+        pre.textContent = staticSignal;
+      }
+    }
 
-    let raf = 0;
-    let lastTime = 0;
-
-    const fps = 6;
-    const frameInterval = 1000 / fps;
-    const backgroundThreshold = 0.14;
+    function shouldAnimate() {
+      return animated && inViewport && !document.hidden && !disposed && !failed;
+    }
 
     function draw(now: number) {
-      if (!video.videoWidth || !video.videoHeight) {
-        raf = requestAnimationFrame(draw);
-        return;
+      if (!shouldAnimate()) return;
+      if (now - lastFrame >= 1000 / 8) {
+        drawFrame();
+        lastFrame = now;
       }
-
-      if (now - lastTime < frameInterval) {
-        raf = requestAnimationFrame(draw);
-        return;
-      }
-
-      lastTime = now;
-
-      const cols = window.innerWidth < 700 ? 110 : 100;
-      const scale = video.videoHeight / video.videoWidth;
-      const rows = Math.max(18, Math.floor(cols * scale * 0.5));
-
-      canvas.width = cols;
-      canvas.height = rows;
-
-      ctx.drawImage(video, 0, 0, cols, rows);
-
-      const { data } = ctx.getImageData(0, 0, cols, rows);
-
-      let ascii = "";
-
-      for (let y = 0; y < rows; y++) {
-        let line = "";
-
-        for (let x = 0; x < cols; x++) {
-          const i = (y * cols + x) * 4;
-
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-
-          const brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
-
-          if (brightness < backgroundThreshold) {
-            line += " ";
-            continue;
-          }
-
-          const normalized =
-            (brightness - backgroundThreshold) / (1 - backgroundThreshold);
-
-          const charIndex = Math.max(
-            0,
-            Math.min(
-              ASCII_CHARS.length - 1,
-              Math.floor(normalized * (ASCII_CHARS.length - 1)),
-            ),
-          );
-
-          line += ASCII_CHARS[charIndex];
-        }
-
-        ascii += line + "\n";
-      }
-
-      pre.textContent = ascii;
-      raf = requestAnimationFrame(draw);
+      frameId = requestAnimationFrame(draw);
     }
 
-    async function start() {
-      try {
-        await video.play();
-      } catch {
-        // autoplay pode falhar em alguns navegadores
+    function synchronize() {
+      if (!video) return;
+      const currentGeneration = ++generation;
+      cancelAnimationFrame(frameId);
+      if (!shouldAnimate() || video.readyState < 2) {
+        video.pause();
+        if (!animated) pre!.textContent = staticSignal;
+        return;
       }
-
-      raf = requestAnimationFrame(draw);
+      void video
+        .play()
+        .then(() => {
+          if (currentGeneration === generation && shouldAnimate())
+            frameId = requestAnimationFrame(draw);
+        })
+        .catch(() => {
+          drawFrame();
+        });
     }
 
-    video.addEventListener("loadeddata", start);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        inViewport = entry.isIntersecting;
+        synchronize();
+      },
+      { rootMargin: "80px" },
+    );
+    observer.observe(wrapper);
+    video.addEventListener("loadeddata", synchronize);
+    document.addEventListener("visibilitychange", synchronize);
 
     return () => {
-      cancelAnimationFrame(raf);
-      video.removeEventListener("loadeddata", start);
+      disposed = true;
+      generation++;
+      cancelAnimationFrame(frameId);
+      observer.disconnect();
+      video.removeEventListener("loadeddata", synchronize);
+      document.removeEventListener("visibilitychange", synchronize);
+      video.pause();
     };
-  }, []);
+  }, [animated]);
 
   return (
-    <div className={styles.wrap} aria-hidden="true">
+    <div ref={wrapperRef} className="ascii-wrap" aria-hidden="true">
       <video
         ref={videoRef}
         src={waveVideo}
         muted
         loop
         playsInline
-        preload="auto"
-        className={styles.hiddenVideo}
+        preload={animated ? "auto" : "none"}
+        hidden
       />
-
-      <canvas ref={canvasRef} className={styles.hiddenCanvas} />
-
-      <pre ref={preRef} className={styles.ascii} />
+      <canvas ref={canvasRef} hidden />
+      <pre ref={preRef} className="ascii-art">
+        {staticSignal}
+      </pre>
     </div>
   );
 }

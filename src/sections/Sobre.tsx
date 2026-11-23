@@ -1,101 +1,103 @@
-import { useEffect, useMemo, useState } from "react";
+import { SiGithub } from "react-icons/si";
+import { Download } from "lucide-react";
 import AsciiVideo from "../components/AsciiVideo";
-import s from "./Sobre.module.scss";
+import { profile } from "../data/profile";
 
-function useTypewriter(words: string[]) {
-  const [index, setIndex] = useState(0);
-  const [text, setText] = useState("");
-  const [phase, setPhase] = useState<"typing" | "pause" | "deleting">("typing");
-
-  useEffect(() => {
-    const currentWord = words[index];
-
-    let delay = 75;
-
-    if (phase === "pause") delay = 1200;
-    if (phase === "deleting") delay = 35;
-
-    const timeout = setTimeout(() => {
-      if (phase === "typing") {
-        const nextText = currentWord.slice(0, text.length + 1);
-        setText(nextText);
-
-        if (nextText === currentWord) {
-          setPhase("pause");
-        }
-
-        return;
-      }
-
-      if (phase === "pause") {
-        setPhase("deleting");
-        return;
-      }
-
-      if (phase === "deleting") {
-        const nextText = currentWord.slice(0, text.length - 1);
-        setText(nextText);
-
-        if (nextText === "") {
-          setPhase("typing");
-          setIndex((i) => (i + 1) % words.length);
-        }
-      }
-    }, delay);
-
-    return () => clearTimeout(timeout);
-  }, [text, phase, index, words]);
-
-  return text;
-}
-
-export default function Sobre() {
-  const words = useMemo(
-    () => ["Full-Stack Developer", "Front-End Developer", "Back-End Developer"],
-    [],
-  );
-
-  const typed = useTypewriter(words);
-
+export default function Sobre({ effectsEnabled }: { effectsEnabled: boolean }) {
   return (
-    <section id="sobre" className="section">
-      <div className="section__inner">
-        <div className={s.layout}>
-          <div className={s.text}>
-            <pre className={s.ascii}>
-              {` _____              _                        
-|  __ \\            | |                       
-| |  \\/ _   _  ___ | |_   __ _ __   __  ___  
-| | __ | | | |/ __|| __| / _\` |\\ \\ / / / _ \\ 
-| |_\\ \\| |_| |\\__ \\| |_ | (_| | \\ V / | (_) |
- \\____/ \\__,_||___/ \\__| \\__,_|  \\_/   \\___/ `}
-            </pre>
-
-            <pre className={s.ascii}>
-              {`______                                       _            
-|  ___|                                     | |           
-| |_     ___  _ __  _ __    __ _  _ __    __| |  ___  ____ 
-|  _|   / _ \\| '__|| '_ \\  / _\` || '_ \\  / _\` | / _ \\|_  /
-| |    |  __/| |   | | | || (_| || | | || (_| ||  __/ / / 
-\\_|     \\___||_|   |_| |_| \\__,_||_| |_| \\__,_| \\___|/___|`}
-            </pre>
-
-            <h2 className={s.role}>
-              {typed}
-              <span className={s.caret} />
-            </h2>
-
-            <p className={s.summary}>
-              Olá! Sou Cientista da Computação formado na UNIFAL. Atualemnte no
-              cargo de Desenvolvedor JR que adora resolver problemas e desafios.
-              Tenho experiências práticas recentes com Node.js, React,
-              JavaScript e banco de dados.
+    <section id="sobre" className="hero section" aria-labelledby="hero-title">
+      <div className="section-inner">
+        <div className="hero-kicker">
+          <span>PORTFÓLIO PESSOAL</span>
+          <span>DESENVOLVIMENTO & EXPERIMENTAÇÃO</span>
+        </div>
+        <div className="hero-layout">
+          <div className="hero-copy">
+            <p className="terminal-prompt">
+              <span aria-hidden="true">guest@gustavo:~$</span> whoami
             </p>
+            <h1 id="hero-title">
+              GUSTAVO
+              <br />
+              <span>FERNANDEZ</span>
+              <span className="cursor title-cursor" aria-hidden="true">
+                _
+              </span>
+            </h1>
+            <p className="hero-role">
+              {profile.role}
+              <span className="role-line" aria-hidden="true" />
+            </p>
+            <p className="hero-summary">{profile.introduction}</p>
+            <div className="hero-actions">
+              <a className="button button-primary" href="#projetos">
+                Explorar projetos
+              </a>
+              <a
+                className="button button-secondary"
+                href={profile.resume}
+                download
+              >
+                <Download size={16} aria-hidden="true" />
+                Baixar currículo
+              </a>
+            </div>
+            <a
+              className="hero-github"
+              href={profile.github}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <SiGithub size={16} aria-hidden="true" />
+              github.com/GustavoAlot
+            </a>
           </div>
-
-          <div className={s.media}>
-            <AsciiVideo />
+          <div className="signal-panel">
+            <div className="panel-bar">
+              <span>
+                <span className="panel-square" aria-hidden="true" />{" "}
+                SINAL_VISUAL
+              </span>
+              <span>ASCII / WEBM</span>
+            </div>
+            <div className="signal-screen">
+              <div
+                className="screen-crosshair crosshair-top"
+                aria-hidden="true"
+              >
+                +
+              </div>
+              <AsciiVideo animated={effectsEnabled} />
+              <div
+                className="screen-crosshair crosshair-bottom"
+                aria-hidden="true"
+              >
+                +
+              </div>
+              <span className="signal-caption" aria-hidden="true">
+                A LITTLE HUMAN IN THE MACHINE.
+              </span>
+            </div>
+            <div className="panel-bar panel-bar-bottom">
+              <span>VÍDEO CONVERTIDO EM CARACTERES</span>
+              <span
+                aria-label={
+                  effectsEnabled ? "Animação ativa" : "Imagem estática"
+                }
+              >
+                {effectsEnabled ? "[ PLAY ]" : "[ PAUSE ]"}
+              </span>
+            </div>
           </div>
+        </div>
+        <div className="hero-bottom">
+          <span className="availability">
+            <span className="status-light" aria-hidden="true" />
+            {profile.availability}
+          </span>
+          <a href="#resumo">
+            Conheça minha trajetória <span aria-hidden="true">[ + ]</span>
+          </a>
         </div>
       </div>
     </section>

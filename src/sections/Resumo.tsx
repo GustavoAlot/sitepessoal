@@ -1,5 +1,3 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import styles from "./Resumo.module.scss";
 import {
   SiJavascript,
   SiTypescript,
@@ -14,114 +12,66 @@ import {
   SiCplusplus,
   SiTailwindcss,
 } from "react-icons/si";
+import SectionHeading from "../components/SectionHeading";
+import { education, experience, profile } from "../data/profile";
 
-type Tech = { name: string; icon: ReactNode };
-type Item = { title: string; time?: string; meta: ReactNode };
-
-const TECHS: Tech[] = [
-  { name: "JavaScript", icon: <SiJavascript /> },
-  { name: "TypeScript", icon: <SiTypescript /> },
-  { name: "Python", icon: <SiPython /> },
-  { name: "React", icon: <SiReact /> },
-  { name: "Node.js", icon: <SiNodedotjs /> },
-  { name: "MySQL", icon: <SiMysql /> },
-  { name: "MongoDB", icon: <SiMongodb /> },
-  { name: "Firebase", icon: <SiFirebase /> },
-  { name: "Git", icon: <SiGit /> },
-  { name: "C", icon: <SiC /> },
-  { name: "C++", icon: <SiCplusplus /> },
-  { name: "Tailwind CSS", icon: <SiTailwindcss /> },
-];
-
-const LEFT: Item[] = [
-  {
-    title: "Formação",
-    time: "Ciência da Computação (2021 — 2026)",
-    meta: "Universidade Federal de Alfenas",
-  },
-  {
-    title: "Experiência",
-    time: "Polygon Soluções (Abr 2025 — Out 2025)",
-    meta: "Estagiário de Desenvolvimento Front-end",
-  },
-  {
-    title: "Experiência",
-    time: "Fator3 Ventures (Set 2025 — Presente)",
-    meta: "Desenvolvedor Fullstack Jr",
-  },
-  {
-    title: "Línguas",
-    meta: (
-      <ul className={styles.langList}>
-        <li>Português</li>
-        <li>
-          Inglês <span className={styles.langLevel}>(avançado)</span>
-        </li>
-      </ul>
-    ),
-  },
+const technologies = [
+  { name: "JavaScript", Icon: SiJavascript },
+  { name: "TypeScript", Icon: SiTypescript },
+  { name: "React", Icon: SiReact },
+  { name: "Node.js", Icon: SiNodedotjs },
+  { name: "Python", Icon: SiPython },
+  { name: "MySQL", Icon: SiMysql },
+  { name: "MongoDB", Icon: SiMongodb },
+  { name: "Firebase", Icon: SiFirebase },
+  { name: "Git", Icon: SiGit },
+  { name: "C", Icon: SiC },
+  { name: "C++", Icon: SiCplusplus },
+  { name: "Tailwind CSS", Icon: SiTailwindcss },
 ];
 
 export default function Resumo() {
-  const sectionRef = useRef<HTMLElement | null>(null);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    const node = sectionRef.current;
-    if (!node) return;
-
-    const io = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((e) => e.isIntersecting)) {
-          setReady(true);
-          io.disconnect();
-        }
-      },
-      { threshold: 0.25, rootMargin: "0px 0px -10% 0px" },
-    );
-
-    io.observe(node);
-    return () => io.disconnect();
-  }, []);
-
   return (
     <section
       id="resumo"
-      ref={sectionRef}
-      className={`section ${styles.resumo} ${ready ? styles.ready : ""}`}
+      className="section journey-section"
+      aria-label="Sobre mim e trajetória"
     >
-      <div className="section__inner">
-        <pre className={styles.asciiTitle}>
-          {`______                                     
-| ___ \\                                    
-| |_/ /  ___  ___  _   _  _ __ ___    ___  
-|    /  / _ \\/ __|| | | || '_ \` _ \\  / _ \\ 
-| |\\ \\ |  __/\\__ \\| |_| || | | | | || (_) |
-\\_| \\_| \\___||___/ \\__,_||_| |_| |_| \\___/`}
-        </pre>
-
-        <div className={styles.panel}>
-          <div className={styles.left}>
-            {LEFT.map((it, i) => (
-              <div key={i} className={styles.block}>
-                <h4 className={styles.role}>{it.title}</h4>
-                {it.time && <span className={styles.time}>{it.time}</span>}
-                <div className={styles.meta}>{it.meta}</div>
-              </div>
-            ))}
+      <div className="section-inner">
+        <SectionHeading command="sobre-mim" title="O caminho até aqui." />
+        <div className="journey-layout">
+          <div className="about-copy">
+            <h3>Curiosidade como ponto de partida.</h3>
+            <p>{profile.about}</p>
+            <p>{profile.interests}</p>
+            <div className="education-block">
+              <span className="eyebrow">FORMAÇÃO</span>
+              <h4>{education.course}</h4>
+              <p>{education.institution}</p>
+              <span className="metadata">{education.period}</span>
+            </div>
+            <p className="languages">
+              <span>IDIOMAS</span> Português <span aria-hidden="true">/</span>{" "}
+              Inglês avançado
+            </p>
           </div>
-
-          <div className={styles.right}>
-            <ul className={styles.techGrid} aria-label="Tecnologias">
-              {TECHS.map((t) => (
-                <li
-                  key={t.name}
-                  className={styles.techItem}
-                  tabIndex={0}
-                  aria-label={t.name}
-                >
-                  <div className={styles.icon}>{t.icon}</div>
-                  <span className={styles.techName}>{t.name}</span>
+          <div className="journey-details">
+            <h3 className="block-label">EXPERIÊNCIA</h3>
+            <ol className="timeline">
+              {experience.map((item) => (
+                <li key={item.company}>
+                  <span className="metadata">{item.period}</span>
+                  <h4>{item.role}</h4>
+                  <p>{item.company}</p>
+                </li>
+              ))}
+            </ol>
+            <h3 className="block-label stack-label">FERRAMENTAS DE TRABALHO</h3>
+            <ul className="tech-grid" aria-label="Tecnologias">
+              {technologies.map(({ name, Icon }) => (
+                <li key={name}>
+                  <Icon aria-hidden="true" />
+                  <span>{name}</span>
                 </li>
               ))}
             </ul>

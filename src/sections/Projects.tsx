@@ -1,49 +1,54 @@
-import { useMemo, useState } from "react";
-import styles from "./Projects.module.scss";
-import type { Project } from "../data/projects";
-import { projects as baseProjects } from "../data/projects";
-import ProjectDetail from "../components/ProjectDetail";
+import { SiGithub } from "react-icons/si";
+import { useCallback, useState } from "react";
+
+import { projects, type Project } from "../data/projects";
+import { profile } from "../data/profile";
 import ProjectCard from "../components/ProjectCard";
-import "../components/CrtButton.scss";
+import ProjectDetail from "../components/ProjectDetail";
+import SectionHeading from "../components/SectionHeading";
 
 export default function Projects() {
   const [selected, setSelected] = useState<Project | null>(null);
-
-  const projects = useMemo(
-    () =>
-      baseProjects.map((p) => ({
-        ...p,
-        tech: (p.tech ?? ["React", "Node.js", "MongoDB"]).filter(Boolean),
-        features: (p.features ?? []).filter(
-          (f) => typeof f === "string" && f.trim() !== "",
-        ),
-      })),
-    [],
-  );
+  const closeDetail = useCallback(() => setSelected(null), []);
 
   return (
-    <section id="projetos" className={`section ${styles.projects}`}>
-      <div className="section__inner">
-        <pre className={styles.asciiTitle}>
-          {` ______                 _        _                
-| ___ \\               (_)      | |              
-| |_/ / _ __   ___     _   ___ | |_   ___   ___ 
-|  __/ | '__| / _ \\  | | / _ \\| __| / _ \\ / __|
-| |    | |   | (_) | | ||  __/| |_ | (_) |\\__ \\
-\\_|    |_|    \\___/  | | \\___| \\__| \\___/ |___/
-                     _/  |                         
-                    |__/                         `}
-        </pre>
-        <ul className={styles.grid} aria-label="Lista de projetos">
-          {projects.map((p, i) => (
-            <ProjectCard key={i} project={p} onMore={setSelected} />
+    <section
+      id="projetos"
+      className="section projects-section"
+      aria-label="Projetos selecionados"
+    >
+      <div className="section-inner">
+        <SectionHeading
+          command="projetos"
+          title="Ideias que viraram código."
+          description="Uma seleção do que venho construindo, entre soluções do dia a dia e novas possibilidades."
+        />
+        <ul className="projects-grid">
+          {projects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onMore={setSelected}
+            />
           ))}
         </ul>
+        <a
+          className="github-strip"
+          href={profile.github}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <SiGithub size={23} aria-hidden="true" />
+          <span>
+            <strong>O laboratório continua no GitHub.</strong>
+            <span>Estudos, trabalhos acadêmicos e outros experimentos.</span>
+          </span>
+          <span className="github-strip-action">
+            Explorar repositórios <span aria-hidden="true">[ + ]</span>
+          </span>
+        </a>
       </div>
-
-      {selected && (
-        <ProjectDetail project={selected} onBack={() => setSelected(null)} />
-      )}
+      {selected && <ProjectDetail project={selected} onBack={closeDetail} />}
     </section>
   );
 }

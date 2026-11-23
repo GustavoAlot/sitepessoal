@@ -1,96 +1,56 @@
-import "./styles/theme.css";
-
+import { useEffect, useState } from "react";
 import Nav from "./components/Nav";
+import CRTOverlay from "./components/CRTOverlay";
+import Footer from "./components/Footers";
 import Sobre from "./sections/Sobre";
 import Resumo from "./sections/Resumo";
 import Projects from "./sections/Projects";
 import Contact from "./sections/Contact";
-import NextSectionJump from "./components/NextSectionJump";
-import CRTOverlay from "./components/CRTOverlay";
-import BootLoading from "./components/BootLoading";
-
-import { useEffect, useState } from "react";
-
-type SectionId = "sobre" | "resumo" | "projetos" | "contato";
+import { useEffectsPreference } from "./hooks/useEffectsPreference";
+import { navigation, type SectionId } from "./data/navigation";
+import "./styles/theme.css";
 
 export default function App() {
   const [activeSection, setActiveSection] = useState<SectionId>("sobre");
-  const [crtEnabled, setCrtEnabled] = useState(true);
+  const { effectsEnabled, reducedMotion, toggleEffects } =
+    useEffectsPreference();
 
   useEffect(() => {
-    const ids: SectionId[] = ["sobre", "resumo", "projetos", "contato"];
-    const sections = ids
-      .map((id) => document.getElementById(id))
-      .filter((el): el is HTMLElement => !!el);
-
-    if (!sections.length) return;
-
-    const navH =
-      parseFloat(
-        getComputedStyle(document.documentElement).getPropertyValue(
-          "--nav-height",
-        ),
-      ) || 0;
-
-    const ratios = new Map<Element, number>();
-
-    const io = new IntersectionObserver(
+    const observer = new IntersectionObserver(
       (entries) => {
-        for (const entry of entries)
-          ratios.set(entry.target, entry.intersectionRatio);
-
-        let best: HTMLElement | null = null;
-        let bestRatio = 0;
-
-        for (const el of sections) {
-          const r = ratios.get(el) ?? 0;
-          if (r > bestRatio) {
-            bestRatio = r;
-            best = el;
-          }
-        }
-
-        if (best && best.id !== activeSection)
-          setActiveSection(best.id as SectionId);
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]) setActiveSection(visible[0].target.id as SectionId);
       },
-      {
-        root: null,
-        rootMargin: `-${Math.ceil(navH)}px 0px 0px 0px`,
-        threshold: [0, 0.25, 0.5, 0.75, 1],
-      },
+      { rootMargin: "-15% 0px -55% 0px", threshold: 0 },
     );
-
-    sections.forEach((el) => io.observe(el));
-    return () => io.disconnect();
-  }, [activeSection]);
+    navigation.forEach(({ id }) => {
+      const section = document.getElementById(id);
+      if (section) observer.observe(section);
+    });
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="app">
-      <CRTOverlay enabled={crtEnabled} />
-      <BootLoading />
-
+    <div className="app" data-effects={effectsEnabled ? "on" : "off"}>
+      <a className="skip-link" href="#conteudo">
+        Pular para o conteúdo
+      </a>
+      <CRTOverlay enabled={effectsEnabled} />
       <Nav
-        ids={["sobre", "resumo", "projetos", "contato"]}
         active={activeSection}
-        onChange={setActiveSection}
-        crtEnabled={crtEnabled}
-        onToggleCrt={() => setCrtEnabled((v) => !v)}
+        crtEnabled={effectsEnabled}
+        reducedMotion={reducedMotion}
+        onToggleCrt={toggleEffects}
       />
-
-      <main>
-        <Sobre />
+      <main id="conteudo" tabIndex={-1}>
+        <Sobre effectsEnabled={effectsEnabled} />
         <Resumo />
         <Projects />
         <Contact />
-
-        <NextSectionJump
-          ids={["sobre", "resumo", "projetos", "contato"]}
-          active={activeSection}
-          onChange={setActiveSection}
-          labelNext="Continuar"
-          labelRestart="Voltar ao topo"
-        />
       </main>
+      <Footer />
     </div>
   );
 }
