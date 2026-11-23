@@ -9,6 +9,10 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run format:check && npm run lint && npm run test && npm run build",
+    "predeploy": "npm run check",
     "deploy": "gh-pages -d dist",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
