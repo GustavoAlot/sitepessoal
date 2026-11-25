@@ -1,12 +1,19 @@
 export type ContactErrors = { email?: string; message?: string };
 
-export function validateContact(email: string, message: string): ContactErrors {
+type ErrorMessages = { email: string; message: string };
+
+export function validateContact(
+  email: string,
+  message: string,
+  messages?: ErrorMessages,
+): ContactErrors {
   const errors: ContactErrors = {};
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-    errors.email = "Informe um e-mail válido.";
+    errors.email = messages?.email ?? "Informe um e-mail válido.";
   }
   if (message.trim().length < 8) {
-    errors.message = "Escreva uma mensagem com pelo menos 8 caracteres.";
+    errors.message =
+      messages?.message ?? "Escreva uma mensagem com pelo menos 8 caracteres.";
   }
   return errors;
 }

@@ -1,6 +1,8 @@
 import { profile } from "../data/profile";
+import { useLanguage } from "../hooks/useLanguage";
 
 export default function Footer() {
+  const { t } = useLanguage();
   return (
     <footer className="site-footer">
       <div className="footer-inner">
@@ -8,13 +10,13 @@ export default function Footer() {
           <a className="footer-brand" href="#sobre">
             GF / TERMINAL_
           </a>
-          <p>Um pouco de nostalgia. Muitas linhas de código.</p>
+          <p>{t.footer.tagline}</p>
         </div>
         <div className="footer-end">
           <span>
             © {new Date().getFullYear()} {profile.name}
           </span>
-          <a href="#sobre">Voltar ao início [ ↑ ]</a>
+          <a href="#sobre">{t.footer.back} [ ↑ ]</a>
         </div>
       </div>
     </footer>

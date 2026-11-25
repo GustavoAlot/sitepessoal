@@ -1,29 +1,29 @@
 import { SiGithub } from "react-icons/si";
-import { Download, Mail, MessageSquare } from "lucide-react";
+import { BriefcaseBusiness, Mail, MessageSquare } from "lucide-react";
 import EmailSent from "../components/EmailSent";
+import ResumeDownload from "../components/ResumeDownload";
 import SectionHeading from "../components/SectionHeading";
 import { profile } from "../data/profile";
+import { useLanguage } from "../hooks/useLanguage";
 
 export default function Contact() {
+  const { t } = useLanguage();
   return (
     <section
       id="contato"
       className="section contact-section"
-      aria-label="Contato"
+      aria-label={t.contact.label}
     >
       <div className="section-inner">
-        <SectionHeading command="contato" title="Vamos abrir uma conversa?" />
+        <SectionHeading command={t.contact.command} title={t.contact.title} />
         <div className="contact-layout">
           <div className="contact-copy">
             <p className="availability">
               <span className="status-light" aria-hidden="true" />
-              {profile.availability}
+              {t.profile.availability}
             </p>
-            <p className="contact-intro">
-              Tem uma oportunidade, uma ideia para tirar do papel ou só quer
-              trocar uma ideia sobre tecnologia?
-            </p>
-            <p>Minha caixa de entrada está aberta.</p>
+            <p className="contact-intro">{t.contact.introduction}</p>
+            <p>{t.contact.inbox}</p>
             <a className="email-link" href={`mailto:${profile.email}`}>
               {profile.email}
             </a>
@@ -37,6 +37,14 @@ export default function Contact() {
                 GitHub<span aria-hidden="true">[ + ]</span>
               </a>
               <a
+                href={profile.linkedin}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <BriefcaseBusiness size={18} aria-hidden="true" />
+                LinkedIn<span aria-hidden="true">[ + ]</span>
+              </a>
+              <a
                 href={profile.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -46,12 +54,10 @@ export default function Contact() {
               </a>
               <a href={`mailto:${profile.email}`}>
                 <Mail size={18} aria-hidden="true" />
-                E-mail<span aria-hidden="true">[ + ]</span>
+                {t.contact.email}
+                <span aria-hidden="true">[ + ]</span>
               </a>
-              <a href={profile.resume} download>
-                <Download size={18} aria-hidden="true" />
-                Currículo em PDF<span aria-hidden="true">[ ↓ ]</span>
-              </a>
+              <ResumeDownload variant="contact" />
             </div>
           </div>
           <EmailSent />

@@ -5,15 +5,20 @@ import {
   SiReact,
   SiNodedotjs,
   SiMysql,
+  SiPostgresql,
   SiMongodb,
   SiFirebase,
+  SiDocker,
   SiGit,
   SiC,
   SiCplusplus,
   SiTailwindcss,
+  SiRedis,
 } from "react-icons/si";
+import { Cloud } from "lucide-react";
 import SectionHeading from "../components/SectionHeading";
-import { education, experience, profile } from "../data/profile";
+import { education, experience } from "../data/profile";
+import { useLanguage } from "../hooks/useLanguage";
 
 const technologies = [
   { name: "JavaScript", Icon: SiJavascript },
@@ -28,46 +33,51 @@ const technologies = [
   { name: "C", Icon: SiC },
   { name: "C++", Icon: SiCplusplus },
   { name: "Tailwind CSS", Icon: SiTailwindcss },
+  { name: "PostgreSQL", Icon: SiPostgresql },
+  { name: "AWS", Icon: Cloud },
+  { name: "Docker", Icon: SiDocker },
+  { name: "Redis", Icon: SiRedis },
 ];
 
 export default function Resumo() {
+  const { t, language } = useLanguage();
   return (
     <section
       id="resumo"
       className="section journey-section"
-      aria-label="Sobre mim e trajetória"
+      aria-label={t.journey.label}
     >
       <div className="section-inner">
-        <SectionHeading command="sobre-mim" title="O caminho até aqui." />
+        <SectionHeading command={t.journey.command} title={t.journey.title} />
         <div className="journey-layout">
           <div className="about-copy">
-            <h3>Curiosidade como ponto de partida.</h3>
-            <p>{profile.about}</p>
-            <p>{profile.interests}</p>
+            <h3>{t.journey.subtitle}</h3>
+            <p>{t.profile.about}</p>
+            <p>{t.profile.interests}</p>
             <div className="education-block">
-              <span className="eyebrow">FORMAÇÃO</span>
-              <h4>{education.course}</h4>
-              <p>{education.institution}</p>
-              <span className="metadata">{education.period}</span>
+              <span className="eyebrow">{t.journey.education}</span>
+              <h4>{education.course[language]}</h4>
+              <p>{education.institution[language]}</p>
+              <span className="metadata">{education.period[language]}</span>
             </div>
             <p className="languages">
-              <span>IDIOMAS</span> Português <span aria-hidden="true">/</span>{" "}
-              Inglês avançado
+              <span>{t.journey.languages}</span> {t.journey.languageList}
             </p>
           </div>
           <div className="journey-details">
-            <h3 className="block-label">EXPERIÊNCIA</h3>
+            <h3 className="block-label">{t.journey.experience}</h3>
             <ol className="timeline">
               {experience.map((item) => (
                 <li key={item.company}>
-                  <span className="metadata">{item.period}</span>
-                  <h4>{item.role}</h4>
+                  <span className="metadata">{item.period[language]}</span>
+                  <h4>{item.role[language]}</h4>
                   <p>{item.company}</p>
+                  <p className="experience-summary">{item.summary[language]}</p>
                 </li>
               ))}
             </ol>
-            <h3 className="block-label stack-label">FERRAMENTAS DE TRABALHO</h3>
-            <ul className="tech-grid" aria-label="Tecnologias">
+            <h3 className="block-label stack-label">{t.journey.tools}</h3>
+            <ul className="tech-grid" aria-label={t.journey.technologies}>
               {technologies.map(({ name, Icon }) => (
                 <li key={name}>
                   <Icon aria-hidden="true" />
