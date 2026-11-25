@@ -320,6 +320,62 @@
   line-height: 1.8;
 }
 
+/* Project screenshots use manual controls, without automatic motion. */
+.project-gallery {
+  margin-bottom: 25px;
+}
+.project-gallery figure {
+  margin: 0;
+}
+.project-gallery .dialog-image {
+  max-height: 480px;
+}
+.project-gallery figcaption {
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.gallery-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 13px;
+}
+.gallery-controls button {
+  min-height: 40px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 7px 12px;
+  color: var(--green);
+  font-size: 0.875rem;
+}
+.gallery-controls button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+.gallery-controls > span {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.project-demo-note {
+  padding: 17px;
+  border-left: 2px solid var(--amber);
+  background: var(--surface);
+}
+.project-demo-note strong {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--amber);
+  font-weight: 500;
+}
+.project-demo-note p {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.8;
+  margin: 9px 0 0;
+}
 .cursor {
   animation: cursor-blink 1.2s steps(1) infinite;
 }
