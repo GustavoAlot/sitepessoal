@@ -50,11 +50,25 @@ O formulário mantém os dados quando ocorre uma falha. A mensagem de confirmaç
 ## Adicionar ou atualizar projetos
 
 1. Adicione a imagem em `public/assets/projects/` com tamanho adequado para a web.
-2. Crie uma entrada em `src/data/projects.ts` com `id` único e estável.
-3. Descreva problema, solução, tecnologias e funcionalidades reais. Use parágrafos no array `longDescription`.
-4. Use `demo` para a aplicação e `repo` apenas para o repositório de código. Omita links que ainda não existem; a interface só mostra as ações disponíveis.
+2. Crie uma entrada no retorno de `getProjects(language)`, em `src/data/projects.ts`, com `id` único e estável.
+3. Descreva problema, solução, tecnologias e funcionalidades reais em português e inglês. Use parágrafos no array `longDescription`.
+4. Use `demo` para a aplicação e `repo` para o repositório público de apresentação/documentação. Os códigos-fonte do AOC e do SPES são privados: os botões de documentação apontam para `GustavoAlot/AOC_monitoramento_financeiro` e `GustavoAlot/calculadora_energia_solar`, que apresentam os projetos por seus READMEs. Omita links que ainda não existem; a interface só mostra as ações disponíveis.
 5. Monte os caminhos das imagens com `import.meta.env.BASE_URL`.
 6. Execute `npm run check` e confira a imagem e os detalhes no navegador.
+
+As capturas ficam em `screenshots`, com caminho, legenda traduzida e dimensões reais. A galeria utiliza controles manuais, sem troca automática de imagem. O AOC apresenta as capturas atualizadas de visão geral, investimentos e celular, extraídas do showcase do próprio projeto com dados fictícios. O texto diferencia a demonstração pública das integrações bancárias e Telegram reservadas ao ambiente pessoal.
+
+O SPES utiliza capturas reais da versão publicada no endereço informado pelo autor: página inicial desktop, calculadora e página inicial mobile. As imagens têm dimensões de 1440 × 1000 e 390 × 844 pixels, com legendas em português e inglês. Ao atualizar a demonstração, revise o campo `demo` e as três capturas em `public/assets/projects/spes-*.jpg`.
+
+O conteúdo técnico foi conferido nos READMEs locais de `AOC/alotofcash`, `AOC/AOC_new_bacck`, `AOC/AOC_monitoramento_financeiro` e `SOLAR/SPES/SolarCalc`. A trajetória e as datas seguem os currículos atualizados fornecidos pelo autor.
+
+## Idioma e downloads
+
+`src/i18n/messages.ts` contém os textos da interface nos dois idiomas. A tipagem exige as mesmas chaves em português e inglês. `LanguageProvider` mantém a escolha; `useLanguage` disponibiliza o dicionário aos componentes. O português é o padrão da primeira visita, sem detecção automática do idioma do navegador.
+
+O seletor PT/EN expõe o estado com `aria-pressed`. A troca atualiza o idioma do documento e os metadados, sem recarregar a página ou mudar as âncoras. A preferência é persistida quando o armazenamento permite. As mensagens de validação acompanham o idioma, inclusive quando um erro já estava visível.
+
+`ResumeDownload` oferece os dois arquivos no início e no contato. O idioma escolhido para download não depende da tradução da página. São links de arquivo com nomes descritivos e indicação do idioma; o seletor fecha com Escape, clique externo ou escolha de arquivo. Os PDFs permanecem idênticos aos originais fornecidos.
 
 ## Verificação manual
 
@@ -68,5 +82,7 @@ Antes de publicar uma alteração visual, confira:
 - Pausa do vídeo fora da seção e com a aba em segundo plano; fallback caso o WebM falhe.
 - Formulário vazio, resposta de erro e mensagem preservada. Use um endpoint de teste para conferir entrega real.
 - Downloads do currículo, links externos e caminhos servidos a partir de `/sitepessoal/`.
+- Troca PT/EN em telas estreitas, rótulos do formulário e legendas dos projetos.
+- Download dos dois currículos em ambos os idiomas da interface e navegação por teclado dos seletores.
 
 Testes de DOM e build não substituem essa verificação visual, a reprodução real do vídeo ou a confirmação de entrega do formulário.
