@@ -1,34 +1,37 @@
 import { SiGithub } from "react-icons/si";
 import { useCallback, useState } from "react";
-
-import { projects, type Project } from "../data/projects";
+import { getProjects } from "../data/projects";
 import { profile } from "../data/profile";
+import { useLanguage } from "../hooks/useLanguage";
 import ProjectCard from "../components/ProjectCard";
 import ProjectDetail from "../components/ProjectDetail";
 import SectionHeading from "../components/SectionHeading";
 
 export default function Projects() {
-  const [selected, setSelected] = useState<Project | null>(null);
-  const closeDetail = useCallback(() => setSelected(null), []);
+  const { t, language } = useLanguage();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const closeDetail = useCallback(() => setSelectedId(null), []);
+  const projects = getProjects(language);
+  const selected = projects.find((project) => project.id === selectedId);
 
   return (
     <section
       id="projetos"
       className="section projects-section"
-      aria-label="Projetos selecionados"
+      aria-label={t.projects.label}
     >
       <div className="section-inner">
         <SectionHeading
-          command="projetos"
-          title="Ideias que viraram código."
-          description="Uma seleção do que venho construindo, entre soluções do dia a dia e novas possibilidades."
+          command={t.projects.command}
+          title={t.projects.title}
+          description={t.projects.description}
         />
         <ul className="projects-grid">
           {projects.map((project) => (
             <ProjectCard
               key={project.id}
               project={project}
-              onMore={setSelected}
+              onMore={(item) => setSelectedId(item.id)}
             />
           ))}
         </ul>
@@ -40,11 +43,11 @@ export default function Projects() {
         >
           <SiGithub size={23} aria-hidden="true" />
           <span>
-            <strong>O laboratório continua no GitHub.</strong>
-            <span>Estudos, trabalhos acadêmicos e outros experimentos.</span>
+            <strong>{t.projects.laboratory}</strong>
+            <span>{t.projects.studies}</span>
           </span>
           <span className="github-strip-action">
-            Explorar repositórios <span aria-hidden="true">[ + ]</span>
+            {t.projects.repositories} <span aria-hidden="true">[ + ]</span>
           </span>
         </a>
       </div>

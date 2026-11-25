@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Send } from "lucide-react";
 import { profile } from "../data/profile";
+import { useLanguage } from "../hooks/useLanguage";
 import {
   CONTACT_ERROR,
   validateContact,
@@ -14,6 +15,7 @@ export default function EmailSent({
 }: {
   endpoint?: string;
 }) {
+  const { t } = useLanguage();
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<ContactErrors>({});
   const controllerRef = useRef<AbortController | null>(null);
@@ -30,7 +32,7 @@ export default function EmailSent({
 
     const email = String(data.get("email") || "").trim();
     const message = String(data.get("message") || "").trim();
-    const nextErrors = validateContact(email, message);
+    const nextErrors = validateContact(email, message, t.contact.errors);
     setErrors(nextErrors);
     setStatus("idle");
     if (Object.keys(nextErrors).length) {
@@ -70,18 +72,18 @@ export default function EmailSent({
       className="contact-form"
       onSubmit={handleSubmit}
       noValidate
-      aria-label="Enviar mensagem"
+      aria-label={t.contact.form}
     >
       <div className="panel-bar">
-        <span>NOVA_MENSAGEM</span>
-        <span>CANAL DIRETO</span>
+        <span>{t.contact.newMessage}</span>
+        <span>{t.contact.channel}</span>
       </div>
       <div className="form-body">
         <fieldset disabled={status === "sending"}>
-          <legend className="sr-only">Sua mensagem</legend>
+          <legend className="sr-only">{t.contact.legend}</legend>
           <div className="honeypot" aria-hidden="true">
             <label>
-              Empresa
+              {t.contact.company}
               <input
                 type="text"
                 name="company"
@@ -91,7 +93,7 @@ export default function EmailSent({
             </label>
           </div>
           <label className="field-label" htmlFor="contact-email">
-            Seu e-mail <span aria-hidden="true">*</span>
+            {t.contact.emailLabel} <span aria-hidden="true">*</span>
           </label>
           <input
             id="contact-email"
@@ -99,20 +101,20 @@ export default function EmailSent({
             type="email"
             autoComplete="email"
             required
-            placeholder="voce@exemplo.com"
+            placeholder={t.contact.emailPlaceholder}
             aria-invalid={Boolean(errors.email)}
             aria-describedby={errors.email ? "email-error" : undefined}
           />
           {errors.email && (
             <p id="email-error" className="field-error" role="alert">
-              {errors.email}
+              {t.contact.errors.email}
             </p>
           )}
           <label
             className="field-label message-label"
             htmlFor="contact-message"
           >
-            Sua mensagem <span aria-hidden="true">*</span>
+            {t.contact.messageLabel} <span aria-hidden="true">*</span>
           </label>
           <textarea
             id="contact-message"
@@ -120,13 +122,13 @@ export default function EmailSent({
             rows={5}
             required
             minLength={8}
-            placeholder="Me conte sobre a oportunidade, uma ideia ou um projeto..."
+            placeholder={t.contact.messagePlaceholder}
             aria-invalid={Boolean(errors.message)}
             aria-describedby={errors.message ? "message-error" : undefined}
           />
           {errors.message && (
             <p id="message-error" className="field-error" role="alert">
-              {errors.message}
+              {t.contact.errors.message}
             </p>
           )}
           <button
@@ -135,20 +137,18 @@ export default function EmailSent({
             aria-busy={status === "sending"}
           >
             <Send size={16} aria-hidden="true" />
-            {status === "sending" ? "Enviando mensagem..." : "Enviar mensagem"}
+            {status === "sending" ? t.contact.sending : t.contact.send}
           </button>
         </fieldset>
         <div className="form-status" aria-live="polite" aria-atomic="true">
           {status === "success" && (
-            <p className="form-success">
-              Mensagem enviada. Obrigado pelo contato!
-            </p>
+            <p className="form-success">{t.contact.success}</p>
           )}
-          {status === "error" && <p className="field-error">{CONTACT_ERROR}</p>}
+          {status === "error" && (
+            <p className="field-error">{t.contact.errors.submission}</p>
+          )}
         </div>
-        <p className="form-note">
-          Envio via Formspree. Seu e-mail será usado para responder ao contato.
-        </p>
+        <p className="form-note">{t.contact.note}</p>
       </div>
     </form>
   );

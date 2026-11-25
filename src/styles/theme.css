@@ -223,6 +223,159 @@
   cursor: default;
   opacity: 0.75;
 }
+.header-controls {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 10px;
+  margin-left: 12px;
+}
+.header-controls .effects-toggle {
+  margin-left: 0;
+}
+.language-switch {
+  display: flex;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.language-switch button {
+  min-width: 32px;
+  min-height: 36px;
+  padding: 5px 7px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+.language-switch button[aria-pressed="true"] {
+  background: var(--green);
+  color: var(--bg);
+}
+.language-switch button:hover:not([aria-pressed="true"]) {
+  color: var(--green);
+}
+
+/* The PDF language is independent of the website language. */
+.resume-download {
+  position: relative;
+  min-width: 0;
+}
+.resume-download > button {
+  width: 100%;
+}
+.hero-actions .resume-download > button {
+  width: 100%;
+}
+.resume-options {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 30;
+  min-width: 100%;
+  width: max-content;
+  max-width: calc(100vw - 40px);
+  padding: 6px;
+  border: 1px solid var(--green-dim);
+  background: var(--surface);
+  box-shadow: 0 12px 30px #0008;
+}
+.resume-options a {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 9px 14px;
+  color: var(--fg);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+.resume-options a:hover {
+  background: var(--surface-raised);
+  color: var(--green);
+}
+.resume-download--contact {
+  grid-column: 1 / -1;
+}
+.resume-contact-button {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  gap: 10px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+  font-size: 0.875rem;
+}
+.resume-contact-button:hover {
+  color: var(--green);
+}
+.resume-contact-button > svg:last-child {
+  margin-left: auto;
+}
+.timeline .experience-summary {
+  margin-top: 9px;
+  font-size: 0.875rem;
+  line-height: 1.8;
+}
+
+/* Project screenshots use manual controls, without automatic motion. */
+.project-gallery {
+  margin-bottom: 25px;
+}
+.project-gallery figure {
+  margin: 0;
+}
+.project-gallery .dialog-image {
+  max-height: 480px;
+}
+.project-gallery figcaption {
+  margin-top: 9px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.gallery-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 13px;
+}
+.gallery-controls button {
+  min-height: 40px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  padding: 7px 12px;
+  color: var(--green);
+  font-size: 0.875rem;
+}
+.gallery-controls button:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+.gallery-controls > span {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.project-demo-note {
+  padding: 17px;
+  border-left: 2px solid var(--amber);
+  background: var(--surface);
+}
+.project-demo-note strong {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  color: var(--amber);
+  font-weight: 500;
+}
+.project-demo-note p {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.8;
+  margin: 9px 0 0;
+}
 .cursor {
   animation: cursor-blink 1.2s steps(1) infinite;
 }
@@ -1068,6 +1221,12 @@ html:has([data-effects="off"]) {
   }
 }
 @media (max-width: 860px) {
+  .header-controls {
+    margin-left: auto;
+  }
+  .hero-actions > .resume-download {
+    width: 100%;
+  }
   .header-inner {
     flex-wrap: wrap;
     min-height: 70px;
@@ -1168,6 +1327,13 @@ html:has([data-effects="off"]) {
 
 /* Mobile: the ASCII remains part of the experience. */
 @media (max-width: 640px) {
+  .hero-actions > .resume-download {
+    flex: 1 1 auto;
+    width: auto;
+  }
+  .header-controls {
+    gap: 8px;
+  }
   :root {
     --header-height: 117px;
   }
@@ -1349,5 +1515,26 @@ html:has([data-effects="off"]) {
   }
   .dialog-body > h2 {
     font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .effects-toggle > svg {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .identity-mark {
+    display: none;
+  }
+  .identity {
+    gap: 0;
+  }
+  .nav-links {
+    gap: 4px;
+  }
+  .nav-links a > span {
+    display: none;
   }
 }

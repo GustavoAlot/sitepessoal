@@ -4,6 +4,8 @@ Portfólio pessoal de **Gustavo Fernandez**, desenvolvedor full stack e cientist
 
 O vídeo convertido em ASCII faz parte da identidade do projeto. Verde fósforo, detalhes em âmbar, tipografia de terminal e textura CRT dão contexto ao conteúdo sem bloquear a navegação.
 
+A interface está disponível em **português e inglês**, com português como padrão. O seletor PT/EN fica no cabeçalho; a escolha dos currículos em PDF é independente do idioma da página.
+
 ## Executar localmente
 
 Use **Node.js 24.15 ou superior na linha 24 LTS** e **npm 11 ou superior**. A versão do Node está em `.nvmrc`, os requisitos estão em `package.json` e o gerenciador usado no projeto é npm. O ambiente foi verificado com Node 24.18 e npm 11.16.
@@ -43,19 +45,29 @@ No PowerShell com execução de scripts bloqueada, use `npm.cmd` no lugar de `np
 
 ## Onde editar
 
-| Conteúdo                                              | Arquivo                                  |
-| ----------------------------------------------------- | ---------------------------------------- |
-| Apresentação, disponibilidade, contatos e experiência | `src/data/profile.ts`                    |
-| Descrições, tecnologias e links dos projetos          | `src/data/projects.ts`                   |
-| Seções e rótulos da navegação                         | `src/data/navigation.ts`                 |
-| Cores, componentes visuais e responsividade           | `src/styles/theme.css`                   |
-| Reset, fontes e estilos globais                       | `src/index.css`                          |
-| Título, descrição e metadados sociais                 | `index.html`                             |
-| Currículo em PDF                                      | `public/assets/GustavoFernandezPTBR.pdf` |
-| Capturas dos projetos                                 | `public/assets/projects/`                |
-| Vídeo original usado no ASCII                         | `src/assets/ascii-wave.webm`             |
+| Conteúdo                                     | Arquivo                                                     |
+| -------------------------------------------- | ----------------------------------------------------------- |
+| Textos da interface e apresentação em PT/EN  | `src/i18n/messages.ts`                                      |
+| Contatos, currículos, formação e experiência | `src/data/profile.ts`                                       |
+| Descrições, tecnologias e links dos projetos | `src/data/projects.ts`                                      |
+| Identificadores estáveis das seções          | `src/data/navigation.ts`                                    |
+| Cores, componentes visuais e responsividade  | `src/styles/theme.css`                                      |
+| Reset, fontes e estilos globais              | `src/index.css`                                             |
+| Título, descrição e metadados sociais        | `index.html`                                                |
+| Currículo em português                       | `public/assets/resumes/Gustavo_Fernandez_Full_Stack.pdf`    |
+| Currículo em inglês                          | `public/assets/resumes/Gustavo_Fernandez_Full_Stack_EN.pdf` |
+| Capturas dos projetos                        | `public/assets/projects/`                                   |
+| Vídeo original usado no ASCII                | `src/assets/ascii-wave.webm`                                |
 
-Os dados pessoais ficam separados da interface. Ao atualizar o emprego ou a disponibilidade, edite `profile.ts` e revise também o PDF do currículo, que é um arquivo independente.
+Os dados pessoais ficam separados da interface. Ao atualizar emprego ou formação, edite `profile.ts`; apresentação e disponibilidade em cada idioma ficam em `messages.ts`. Revise também os dois PDFs, que são arquivos independentes. O caminho antigo `public/assets/GustavoFernandezPTBR.pdf` foi atualizado para a versão atual em português para preservar downloads por links anteriores.
+
+## Idiomas e currículos
+
+O seletor do cabeçalho troca navegação, conteúdo, projetos, mensagens do formulário e rótulos de acessibilidade. O atributo `lang` do documento, título e metadados descritivos acompanham a escolha. As âncoras permanecem iguais nos dois idiomas para preservar os links existentes.
+
+A primeira visita começa em português, independentemente do idioma do navegador. Uma escolha explícita fica salva em `portfolio:language`; se o armazenamento estiver bloqueado, a troca continua funcionando durante a visita. Não há serviço de tradução nem nova variável de ambiente.
+
+Os controles de currículo no início e no contato oferecem os dois PDFs em qualquer idioma da página. As opções podem ser acessadas por teclado; Escape fecha o seletor e devolve o foco ao botão. Os arquivos fornecidos pelo autor são servidos sem alteração de conteúdo.
 
 ## Estrutura e tecnologias
 
@@ -66,6 +78,7 @@ src/
   components/   Navegação, ASCII, formulário, projetos e rodapé
   data/         Perfil, trajetória, projetos e navegação
   hooks/        Preferências de efeitos visuais
+  i18n/         Dicionários PT/EN e estado do idioma
   lib/          Conversão ASCII e validação do formulário
   sections/     Início, trajetória, projetos e contato
   styles/       Tokens e estilos da interface
@@ -99,7 +112,7 @@ O site pode ser desenvolvido localmente sem uma API própria. O envio do formul�
 
 ## Testes e validação
 
-Vitest, Testing Library e jsdom cobrem conversão de pixels em ASCII, validação, preferências de movimento e armazenamento, abertura e fechamento dos projetos, restauração de foco e estados do formulário.
+Vitest, Testing Library e jsdom cobrem conversão de pixels em ASCII, validação, preferências de movimento e armazenamento, abertura e fechamento dos projetos, restauração de foco e estados do formulário. Há também testes de troca e persistência de idioma, metadados, erros traduzidos, seleção independente de currículo e navegação da galeria de projetos.
 
 O jsdom simula o DOM: não reproduz a renderização, o decodificador WebM nem a contenção nativa de foco de um `<dialog>`. Os métodos de abertura e fechamento do diálogo são simulados no setup. Faça também a conferência visual de desktop e celular descrita em [docs/design.md](docs/design.md#verificação-manual).
 

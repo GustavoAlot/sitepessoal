@@ -3,6 +3,8 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { ExternalLink, X } from "lucide-react";
 import type { Project } from "../data/projects";
+import { useLanguage } from "../hooks/useLanguage";
+import ProjectGallery from "./ProjectGallery";
 
 export default function ProjectDetail({
   project,
@@ -11,6 +13,7 @@ export default function ProjectDetail({
   project: Project;
   onBack: () => void;
 }) {
+  const { t } = useLanguage();
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
@@ -41,11 +44,13 @@ export default function ProjectDetail({
     >
       <div className="dialog-content">
         <div className="panel-bar">
-          <span>ARQUIVO / {project.id.toUpperCase()}</span>
+          <span>
+            {t.projects.archive} / {project.id.toUpperCase()}
+          </span>
           <button
             className="icon-button"
             onClick={onBack}
-            aria-label="Fechar detalhes"
+            aria-label={t.projects.close}
           >
             <X size={20} />
           </button>
@@ -53,23 +58,23 @@ export default function ProjectDetail({
         <div className="dialog-body">
           <p className="eyebrow">{project.category}</p>
           <h2 id="project-dialog-title">{project.title}</h2>
-          <img
-            className="dialog-image"
-            src={project.image}
-            alt={`Interface do projeto ${project.title}`}
-            width="800"
-            height="450"
-          />
+          <ProjectGallery screenshots={project.screenshots} />
+          {project.demoNote && (
+            <aside className="project-demo-note">
+              <strong>{t.projects.publicDemo}</strong>
+              <p>{project.demoNote}</p>
+            </aside>
+          )}
           {project.longDescription.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
-          <h3>O que o projeto faz</h3>
+          <h3>{t.projects.features}</h3>
           <ul className="feature-list">
             {project.features.map((feature) => (
               <li key={feature}>{feature}</li>
             ))}
           </ul>
-          <h3>Tecnologias utilizadas</h3>
+          <h3>{t.projects.stack}</h3>
           <ul className="tags">
             {project.tech.map((tech) => (
               <li key={tech}>{tech}</li>
@@ -84,7 +89,7 @@ export default function ProjectDetail({
                 rel="noopener noreferrer"
               >
                 <ExternalLink size={16} aria-hidden="true" />
-                Visitar projeto
+                {t.projects.visit}
               </a>
             )}
             {project.repo && (
@@ -95,7 +100,7 @@ export default function ProjectDetail({
                 rel="noopener noreferrer"
               >
                 <SiGithub size={16} aria-hidden="true" />
-                Ver código
+                {t.projects.documentation}
               </a>
             )}
           </div>

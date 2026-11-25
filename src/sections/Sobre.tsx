@@ -1,15 +1,17 @@
 import { SiGithub } from "react-icons/si";
-import { Download } from "lucide-react";
 import AsciiVideo from "../components/AsciiVideo";
+import ResumeDownload from "../components/ResumeDownload";
 import { profile } from "../data/profile";
+import { useLanguage } from "../hooks/useLanguage";
 
 export default function Sobre({ effectsEnabled }: { effectsEnabled: boolean }) {
+  const { t } = useLanguage();
   return (
     <section id="sobre" className="hero section" aria-labelledby="hero-title">
       <div className="section-inner">
         <div className="hero-kicker">
-          <span>PORTFÓLIO PESSOAL</span>
-          <span>DESENVOLVIMENTO & EXPERIMENTAÇÃO</span>
+          <span>{t.hero.portfolio}</span>
+          <span>{t.hero.experimentation}</span>
         </div>
         <div className="hero-layout">
           <div className="hero-copy">
@@ -25,22 +27,15 @@ export default function Sobre({ effectsEnabled }: { effectsEnabled: boolean }) {
               </span>
             </h1>
             <p className="hero-role">
-              {profile.role}
+              {t.profile.role}
               <span className="role-line" aria-hidden="true" />
             </p>
-            <p className="hero-summary">{profile.introduction}</p>
+            <p className="hero-summary">{t.profile.introduction}</p>
             <div className="hero-actions">
               <a className="button button-primary" href="#projetos">
-                Explorar projetos
+                {t.hero.explore}
               </a>
-              <a
-                className="button button-secondary"
-                href={profile.resume}
-                download
-              >
-                <Download size={16} aria-hidden="true" />
-                Baixar currículo
-              </a>
+              <ResumeDownload />
             </div>
             <a
               className="hero-github"
@@ -56,7 +51,7 @@ export default function Sobre({ effectsEnabled }: { effectsEnabled: boolean }) {
             <div className="panel-bar">
               <span>
                 <span className="panel-square" aria-hidden="true" />{" "}
-                SINAL_VISUAL
+                {t.hero.signal}
               </span>
               <span>ASCII / WEBM</span>
             </div>
@@ -79,11 +74,9 @@ export default function Sobre({ effectsEnabled }: { effectsEnabled: boolean }) {
               </span>
             </div>
             <div className="panel-bar panel-bar-bottom">
-              <span>VÍDEO CONVERTIDO EM CARACTERES</span>
+              <span>{t.hero.conversion}</span>
               <span
-                aria-label={
-                  effectsEnabled ? "Animação ativa" : "Imagem estática"
-                }
+                aria-label={effectsEnabled ? t.hero.playing : t.hero.paused}
               >
                 {effectsEnabled ? "[ PLAY ]" : "[ PAUSE ]"}
               </span>
@@ -93,10 +86,10 @@ export default function Sobre({ effectsEnabled }: { effectsEnabled: boolean }) {
         <div className="hero-bottom">
           <span className="availability">
             <span className="status-light" aria-hidden="true" />
-            {profile.availability}
+            {t.profile.availability}
           </span>
           <a href="#resumo">
-            Conheça minha trajetória <span aria-hidden="true">[ + ]</span>
+            {t.hero.journey} <span aria-hidden="true">[ + ]</span>
           </a>
         </div>
       </div>

@@ -1,8 +1,8 @@
 export const navigation = [
-  { id: "sobre", label: "Início" },
-  { id: "resumo", label: "Trajetória" },
-  { id: "projetos", label: "Projetos" },
-  { id: "contato", label: "Contato" },
+  { id: "sobre" },
+  { id: "resumo" },
+  { id: "projetos" },
+  { id: "contato" },
 ] as const;
 
 export type SectionId = (typeof navigation)[number]["id"];

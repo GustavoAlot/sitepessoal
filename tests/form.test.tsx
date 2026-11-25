@@ -1,3 +1,4 @@
+import LanguageProvider from "../src/i18n/LanguageProvider";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
@@ -17,7 +18,7 @@ describe("contact form", () => {
   it("associates validation errors with the correct fields without submitting", async () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
-    render(<EmailSent />);
+    render(<EmailSent />, { wrapper: LanguageProvider });
     await userEvent.click(
       screen.getByRole("button", { name: "Enviar mensagem" }),
     );
@@ -35,7 +36,9 @@ describe("contact form", () => {
   it("submits to the configured endpoint and clears the form only on success", async () => {
     const fetchMock = vi.fn().mockResolvedValue({ ok: true });
     vi.stubGlobal("fetch", fetchMock);
-    render(<EmailSent endpoint="https://formspree.io/f/test" />);
+    render(<EmailSent endpoint="https://formspree.io/f/test" />, {
+      wrapper: LanguageProvider,
+    });
     const user = await fillForm();
     await user.click(screen.getByRole("button", { name: "Enviar mensagem" }));
     expect(await screen.findByText(/Mensagem enviada/)).toBeInTheDocument();
@@ -54,7 +57,7 @@ describe("contact form", () => {
           ? vi.fn().mockResolvedValue({ ok: false })
           : vi.fn().mockRejectedValue(new Error("Offline"));
       vi.stubGlobal("fetch", fetchMock);
-      render(<EmailSent />);
+      render(<EmailSent />, { wrapper: LanguageProvider });
       const user = await fillForm();
       await user.click(screen.getByRole("button", { name: "Enviar mensagem" }));
       expect(
@@ -80,7 +83,7 @@ describe("contact form", () => {
           }),
       ),
     );
-    render(<EmailSent />);
+    render(<EmailSent />, { wrapper: LanguageProvider });
     const user = await fillForm();
     await user.click(screen.getByRole("button", { name: "Enviar mensagem" }));
     expect(
@@ -96,7 +99,7 @@ describe("contact form", () => {
 
   it("discards honeypot submissions without contacting Formspree", () => {
     vi.stubGlobal("fetch", vi.fn());
-    render(<EmailSent />);
+    render(<EmailSent />, { wrapper: LanguageProvider });
     fireEvent.change(screen.getByLabelText("Empresa"), {
       target: { value: "Spam" },
     });

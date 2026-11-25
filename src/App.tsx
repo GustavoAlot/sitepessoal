@@ -7,10 +7,12 @@ import Resumo from "./sections/Resumo";
 import Projects from "./sections/Projects";
 import Contact from "./sections/Contact";
 import { useEffectsPreference } from "./hooks/useEffectsPreference";
+import { useLanguage } from "./hooks/useLanguage";
 import { navigation, type SectionId } from "./data/navigation";
 import "./styles/theme.css";
 
 export default function App() {
+  const { t } = useLanguage();
   const [activeSection, setActiveSection] = useState<SectionId>("sobre");
   const { effectsEnabled, reducedMotion, toggleEffects } =
     useEffectsPreference();
@@ -35,7 +37,7 @@ export default function App() {
   return (
     <div className="app" data-effects={effectsEnabled ? "on" : "off"}>
       <a className="skip-link" href="#conteudo">
-        Pular para o conteúdo
+        {t.skip}
       </a>
       <CRTOverlay enabled={effectsEnabled} />
       <Nav

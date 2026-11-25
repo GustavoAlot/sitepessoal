@@ -1,6 +1,8 @@
 import { useLayoutEffect, useRef } from "react";
 import { Monitor, Power } from "lucide-react";
 import { navigation, type SectionId } from "../data/navigation";
+import { useLanguage } from "../hooks/useLanguage";
+import LanguageSwitch from "./LanguageSwitch";
 
 type Props = {
   active: SectionId;
@@ -15,6 +17,7 @@ export default function Nav({
   reducedMotion,
   onToggleCrt,
 }: Props) {
+  const { t } = useLanguage();
   const headerRef = useRef<HTMLElement>(null);
 
   useLayoutEffect(() => {
@@ -45,11 +48,7 @@ export default function Nav({
   return (
     <header ref={headerRef} className="site-header">
       <div className="header-inner">
-        <a
-          className="identity"
-          href="#sobre"
-          aria-label="Gustavo Fernandez — início"
-        >
+        <a className="identity" href="#sobre" aria-label={t.nav.home}>
           <span className="identity-mark" aria-hidden="true">
             <Monitor size={21} />
           </span>
@@ -60,37 +59,36 @@ export default function Nav({
             </span>
           </span>
         </a>
-        <nav className="nav-links" aria-label="Navegação principal">
-          {navigation.map(({ id, label }) => (
+        <nav className="nav-links" aria-label={t.nav.label}>
+          {navigation.map(({ id }) => (
             <a
               key={id}
               href={`#${id}`}
               aria-current={active === id ? "location" : undefined}
             >
               <span aria-hidden="true">/</span>
-              {label}
+              {t.navigation[id]}
             </a>
           ))}
         </nav>
-        <button
-          className="effects-toggle"
-          type="button"
-          aria-pressed={crtEnabled}
-          onClick={onToggleCrt}
-          aria-label="Efeitos visuais"
-          disabled={reducedMotion}
-          title={
-            reducedMotion
-              ? "Efeitos desativados pela preferência de movimento reduzido do sistema"
-              : "Ativar ou desativar os efeitos visuais"
-          }
-        >
-          <Power size={15} aria-hidden="true" />
-          <span>
-            FX{" "}
-            <span className="effects-state">{crtEnabled ? "ON" : "OFF"}</span>
-          </span>
-        </button>
+        <div className="header-controls">
+          <LanguageSwitch />
+          <button
+            className="effects-toggle"
+            type="button"
+            aria-pressed={crtEnabled}
+            onClick={onToggleCrt}
+            aria-label={t.nav.effects}
+            disabled={reducedMotion}
+            title={reducedMotion ? t.nav.reducedMotion : t.nav.effectsToggle}
+          >
+            <Power size={15} aria-hidden="true" />
+            <span>
+              FX{" "}
+              <span className="effects-state">{crtEnabled ? "ON" : "OFF"}</span>
+            </span>
+          </button>
+        </div>
       </div>
     </header>
   );
