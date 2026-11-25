@@ -1,0 +1,13 @@
+# Keep checkout line endings aligned with EditorConfig and Prettier on every OS.
+* text=auto eol=lf
+
+# Preserve binary assets without line-ending conversion.
+*.pdf binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.webm binary
+*.zip binary
